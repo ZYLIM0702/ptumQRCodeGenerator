@@ -1,229 +1,242 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>QR Code Generator</title>
-    <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    <script
+      type="text/javascript"
+      src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"
+    ></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background-color: #f4f4f4;
-            margin: 0;
-        }
-        #container {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            width: 90%;
-            max-width: 1200px;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        }
-        #formSection {
-            flex: 1;
-            margin-right: 20px;
-        }
-        #canvas {
-            width: 400px; /* Set a fixed width for the QR code display */
-            height: 400px; /* Set a fixed height for the QR code display */
-            margin-top: 20px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #f9f9f9; /* Light background for contrast */
-        }
-        label {
-            margin-top: 10px;
-            display: block;
-        }
-        button {
-            margin-top: 20px;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            background-color: #6a1a4c;
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #4e0e36;
-        }
-        .download-button {
-            margin-top: 10px;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            background-color: #007bff;
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .download-button:hover {
-            background-color: #0056b3;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background-color: #f4f4f4;
+        margin: 0;
+      }
+      #container {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        width: 90%;
+        max-width: 1200px;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+      #formSection {
+        flex: 1;
+        margin-right: 20px;
+      }
+      #canvas {
+        width: 400px; /* Set a fixed width for the QR code display */
+        height: 400px; /* Set a fixed height for the QR code display */
+        margin-top: 20px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f9f9f9; /* Light background for contrast */
+      }
+      label {
+        margin-top: 10px;
+        display: block;
+      }
+      button {
+        margin-top: 20px;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        background-color: #6a1a4c;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      button:hover {
+        background-color: #4e0e36;
+      }
+      .download-button {
+        margin-top: 10px;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      .download-button:hover {
+        background-color: #0056b3;
+      }
     </style>
-</head>
-<body>
-
-<div id="container">
-    <div id="formSection">
+  </head>
+  <body>
+    <div id="container">
+      <div id="formSection">
         <h1>PTUM | QR Code Generator</h1>
         <form id="qrForm">
-            <label for="content">URL or Content:</label>
-            <input type="text" id="content" required>
+          <label for="content">URL or Content:</label>
+          <input type="text" id="content" required />
 
-            <label for="color1">Dot Color:</label>
-            <input type="color" id="color1" value="#D981B5">
+          <label for="color1">Dot Color:</label>
+          <input type="color" id="color1" value="#D981B5" />
 
-            <label for="color2">Eyes Color:</label>
-            <input type="color" id="color2" value="#370957">
+          <label for="color2">Eyes Color:</label>
+          <input type="color" id="color2" value="#370957" />
 
-            <button type="submit">Generate QR Code</button>
+          <button type="submit">Generate QR Code</button>
         </form>
-        <button class="download-button" id="downloadPng">Download as PNG</button>
+        <button class="download-button" id="downloadPng">
+          Download as PNG
+        </button>
+      </div>
+      <div id="canvas" style="width: 400px; height: 400px"></div>
+      <!-- Display size -->
     </div>
-    <div id="canvas" style="width: 400px; height: 400px;"></div> <!-- Display size -->
-</div>
 
-<script type="text/javascript">
-    // Create two QR Code styling objects: one for display, one for download
-    const qrCodeDisplay = new QRCodeStyling({
+    <script type="text/javascript">
+      // Create two QR Code styling objects: one for display, one for download
+      const qrCodeDisplay = new QRCodeStyling({
         width: 400,
         height: 400,
         type: "png",
         data: "",
         margin: 0,
         qrOptions: {
-            typeNumber: "0",
-            mode: "Byte",
-            errorCorrectionLevel: "Q"
+          typeNumber: "0",
+          mode: "Byte",
+          errorCorrectionLevel: "Q",
         },
         dotsOptions: {
-            type: "extra-rounded",
-            color: "#6a1a4c"
+          type: "extra-rounded",
+          color: "#6a1a4c",
         },
         backgroundOptions: {
-            color: null
+          color: 'transparent'
         },
         imageOptions: {
-            crossOrigin: "anonymous",
-            hideBackgroundDots: true,
-            imageSize: 0.4,
-            margin: 0
+          crossOrigin: "anonymous",
+          hideBackgroundDots: true,
+          imageSize: 0.4,
+          margin: 0,
         },
         cornersSquareOptions: {
-            type: "extra-rounded",
-            color: "#000000"
+          type: "extra-rounded",
+          color: "#000000",
         },
         cornersDotOptions: {
-            type: "",
-            color: "#000000"
-        }
-    });
+          type: "",
+          color: "#000000",
+        },
+      });
 
-    const qrCodeDownload = new QRCodeStyling({
+      const qrCodeDownload = new QRCodeStyling({
         width: 1080,
         height: 1080,
         type: "png",
         data: "",
         margin: 0,
         qrOptions: {
-            typeNumber: "0",
-            mode: "Byte",
-            errorCorrectionLevel: "Q"
+          typeNumber: "0",
+          mode: "Byte",
+          errorCorrectionLevel: "Q",
         },
         dotsOptions: {
-            type: "extra-rounded",
-            color: "#6a1a4c"
+          type: "extra-rounded",
+          color: "#6a1a4c",
         },
         backgroundOptions: {
-            color: null
+          color: "transparent"
         },
         imageOptions: {
-            crossOrigin: "anonymous",
-            hideBackgroundDots: true,
-            imageSize: 0.4,
-            margin: 0
+          crossOrigin: "anonymous",
+          hideBackgroundDots: true,
+          imageSize: 0.4,
+          margin: 0,
         },
         cornersSquareOptions: {
-            type: "extra-rounded",
-            color: "#000000"
+          type: "extra-rounded",
+          color: "#000000",
         },
         cornersDotOptions: {
-            type: "",
-            color: "#000000"
-        }
-    });
+          type: "",
+          color: "#000000",
+        },
+      });
 
-    document.getElementById("qrForm").addEventListener("submit", function(event) {
-        event.preventDefault(); // Prevent form submission
+      document
+        .getElementById("qrForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault(); // Prevent form submission
 
-        const content = document.getElementById("content").value;
-        const color1 = document.getElementById("color1").value;
-        const color2 = document.getElementById("color2").value;
-        const logoUrl = "https://zylim0702.github.io/ptumQRCodeGenerator/PTUM_Logo-910x1024.png"; // Use the local path for the logo image
+          const content = document.getElementById("content").value;
+          const color1 = document.getElementById("color1").value;
+          const color2 = document.getElementById("color2").value;
+          const logoUrl =
+            "https://cdn.jsdelivr.net/gh/ZYLIM0702/ptumQRCodeGenerator/PTUM_Logo-910x1024.png"; // Use the local path for the logo image
 
-        // Update both QR codes with the new data
-        qrCodeDisplay.update({
+          // Update both QR codes with the new data
+          qrCodeDisplay.update({
             data: content,
             dotsOptions: {
-                color: color1
+              color: color1,
             },
             cornersSquareOptions: {
-                color: color2
+              color: color2,
             },
             cornersDotOptions: {
-                color: color2
-            },
-            image: logoUrl
-        });
-
-        qrCodeDownload.update({
-            data: content,
-            dotsOptions: {
-                color: color1
-            },
-            cornersSquareOptions: {
-                color: color2
-            },
-            cornersDotOptions: {
-                color: color2
+              color: color2,
             },
             backgroundOptions: {
-            color: null
-        },
-            image: logoUrl
+              color: "transparent",
+            },
+            image: logoUrl,
+          });
+
+          qrCodeDownload.update({
+            data: content,
+            dotsOptions: {
+              color: color1,
+            },
+            cornersSquareOptions: {
+              color: color2,
+            },
+            cornersDotOptions: {
+              color: color2,
+            },
+            backgroundOptions: {
+              color: "transparent",
+            },
+            image: logoUrl,
+          });
+
+          // Append the display QR code to the canvas
+          qrCodeDisplay.append(document.getElementById("canvas"));
         });
 
-        // Append the display QR code to the canvas
-        qrCodeDisplay.append(document.getElementById("canvas"));
-    });
-
-    document.getElementById("downloadPng").onclick = function() {
-        qrCodeDownload.getRawData("png").then((blob) => {
+      document.getElementById("downloadPng").onclick = function () {
+        qrCodeDownload
+          .getRawData("png")
+          .then((blob) => {
             const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
+            const a = document.createElement("a");
             a.href = url;
-            a.download = 'qr.png';
+            a.download = "qr.png";
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-        }).catch((error) => {
+          })
+          .catch((error) => {
             console.error("Download error:", error);
-        });
-    };
-</script>
-
-</body>
+          });
+      };
+    </script>
+  </body>
 </html>
