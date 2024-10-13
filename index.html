@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+        #container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 90%;
+            max-width: 1200px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        #formSection {
+            flex: 1;
+            margin-right: 20px;
+        }
+        #canvas {
+            width: 400px; /* Set a fixed width for the QR code display */
+            height: 400px; /* Set a fixed height for the QR code display */
+            margin-top: 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f9f9f9; /* Light background for contrast */
+        }
+        label {
+            margin-top: 10px;
+            display: block;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #6a1a4c;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #4e0e36;
+        }
+        .download-button {
+            margin-top: 10px;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .download-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<div id="container">
+    <div id="formSection">
+        <h1>PTUM | QR Code Generator</h1>
+        <form id="qrForm">
+            <label for="content">URL or Content:</label>
+            <input type="text" id="content" required>
+
+            <label for="color1">Dot Color:</label>
+            <input type="color" id="color1" value="#D981B5">
+
+            <label for="color2">Eyes Color:</label>
+            <input type="color" id="color2" value="#370957">
+
+            <button type="submit">Generate QR Code</button>
+        </form>
+        <button class="download-button" id="downloadPng">Download as PNG</button>
+    </div>
+    <div id="canvas"></div>
+</div>
+
+<script type="text/javascript">
+    const qrCode = new QRCodeStyling({
+        width: 400,
+        height: 400,
+        type: "png",
+        data: "",
+        margin: 0,
+        qrOptions: {
+            typeNumber: "0",
+            mode: "Byte",
+            errorCorrectionLevel: "Q"
+        },
+        dotsOptions: {
+            type: "extra-rounded",
+            color: "#6a1a4c"
+        },
+        backgroundOptions: {
+            color: "#ffffff"
+        },
+        imageOptions: {
+            hideBackgroundDots: true,
+            imageSize: 0.4,
+            margin: 0
+        },
+        cornersSquareOptions: {
+            type: "extra-rounded",
+            color: "#000000"
+        },
+        cornersDotOptions: {
+            type: "",
+            color: "#000000"
+        }
+    });
+
+    document.getElementById("qrForm").addEventListener("submit", function(event) {
+        event.preventDefault(); // Prevent form submission
+
+        const content = document.getElementById("content").value;
+        const color1 = document.getElementById("color1").value;
+        const color2 = document.getElementById("color2").value;
+        const logoUrl = "PTUM_Logo-910x1024.png"; // Use the local path for the logo image
+
+        qrCode.update({
+            data: content,
+            dotsOptions: {
+                color: color1
+            },
+            cornersSquareOptions: {
+                color: color2
+            },
+            cornersDotOptions: {
+                color: color2
+            },
+            image: logoUrl // Set the logo image URL if provided
+        });
+
+        qrCode.append(document.getElementById("canvas"));
+    });
+
+    function downloadQRCode(format) {
+  const img = new Image();
+  img.crossOrigin = "anonymous"; // Set to allow anonymous cross-origin access
+  img.onload = function() {
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    // Draw the QR code with logo
+    qrCode.update({
+      data: content,
+      dotsOptions: {
+        color: color1
+      },
+      backgroundOptions: {
+        color: color2
+      },
+      image: img // Use the downloaded image
+    });
+    qrCode.append(canvas);
+
+    // Now proceed with downloading the canvas data
+    qrCode.getRawData(format).then(function(data) {
+      // ... rest of downloadQRCode function logic
+    });
+  };
+  const logoUrl = "PTUM_Logo-910x1024.png"; // Get logo URL or null
+
+  img.src = logoUrl; // Set the image source
+}
+
+
+    document.getElementById("downloadPng").addEventListener("click", () => downloadQRCode("png"));
+
+
+</script>
+
+</body>
+</html>
