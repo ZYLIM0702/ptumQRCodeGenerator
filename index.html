@@ -41,10 +41,6 @@
             justify-content: center;
             background-color: #f9f9f9; /* Light background for contrast */
         }
-        canvas {
-            width: 100%;
-            height: 100%;
-        }
         label {
             margin-top: 10px;
             display: block;
@@ -96,11 +92,12 @@
         </form>
         <button class="download-button" id="downloadPng">Download as PNG</button>
     </div>
-    <canvas id="canvas"></canvas> <!-- Change from div to canvas -->
+    <div id="canvas" style="width: 400px; height: 400px;"></div> <!-- Display size -->
 </div>
 
 <script type="text/javascript">
-    const qrCode = new QRCodeStyling({
+    // Create two QR Code styling objects: one for display, one for download
+    const qrCodeDisplay = new QRCodeStyling({
         width: 400,
         height: 400,
         type: "png",
@@ -116,9 +113,44 @@
             color: "#6a1a4c"
         },
         backgroundOptions: {
-            color: "#ffffff"
+            color: null
         },
         imageOptions: {
+            crossOrigin: "anonymous",
+            hideBackgroundDots: true,
+            imageSize: 0.4,
+            margin: 0
+        },
+        cornersSquareOptions: {
+            type: "extra-rounded",
+            color: "#000000"
+        },
+        cornersDotOptions: {
+            type: "",
+            color: "#000000"
+        }
+    });
+
+    const qrCodeDownload = new QRCodeStyling({
+        width: 1080,
+        height: 1080,
+        type: "png",
+        data: "",
+        margin: 0,
+        qrOptions: {
+            typeNumber: "0",
+            mode: "Byte",
+            errorCorrectionLevel: "Q"
+        },
+        dotsOptions: {
+            type: "extra-rounded",
+            color: "#6a1a4c"
+        },
+        backgroundOptions: {
+            color: null
+        },
+        imageOptions: {
+            crossOrigin: "anonymous",
             hideBackgroundDots: true,
             imageSize: 0.4,
             margin: 0
@@ -139,9 +171,10 @@
         const content = document.getElementById("content").value;
         const color1 = document.getElementById("color1").value;
         const color2 = document.getElementById("color2").value;
-        const logoUrl = "PTUM_Logo-910x1024.png"; // Use the local path for the logo image
+        const logoUrl = "https://zylim0702.github.io/ptumQRCodeGenerator/PTUM_Logo-910x1024.png"; // Use the local path for the logo image
 
-        qrCode.update({
+        // Update both QR codes with the new data
+        qrCodeDisplay.update({
             data: content,
             dotsOptions: {
                 color: color1
@@ -152,44 +185,41 @@
             cornersDotOptions: {
                 color: color2
             },
-            image: logoUrl // Set the logo image URL if provided
+            image: logoUrl
         });
 
-        qrCode.append(document.getElementById("canvas"));
+        qrCodeDownload.update({
+            data: content,
+            dotsOptions: {
+                color: color1
+            },
+            cornersSquareOptions: {
+                color: color2
+            },
+            cornersDotOptions: {
+                color: color2
+            },
+            image: logoUrl
+        });
+
+        // Append the display QR code to the canvas
+        qrCodeDisplay.append(document.getElementById("canvas"));
     });
 
-    function downloadQRCode(format) {
-        const img = new Image();
-        img.crossOrigin = "anonymous"; // Set to allow anonymous cross-origin access
-        img.onload = function() {
-            const canvas = document.getElementById("canvas");
-            const ctx = canvas.getContext("2d");
-
-            // Draw the QR code with logo
-            qrCode.update({
-                data: content,
-                dotsOptions: {
-                    color: color1
-                },
-                backgroundOptions: {
-                    color: color2
-                },
-                image: img // Use the downloaded image
-            });
-            qrCode.append(canvas);
-
-            // Now proceed with downloading the canvas data
-            qrCode.getRawData(format).then(function(data) {
-                // ... rest of downloadQRCode function logic
-            });
-        };
-        const logoUrl = "PTUM_Logo-910x1024.png"; // Get logo URL or null
-
-        img.src = logoUrl; // Set the image source
-    }
-
-    document.getElementById("downloadPng").addEventListener("click", () => downloadQRCode("png"));
-
+    document.getElementById("downloadPng").onclick = function() {
+        qrCodeDownload.getRawData("png").then((blob) => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'qr.png';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }).catch((error) => {
+            console.error("Download error:", error);
+        });
+    };
 </script>
 
 </body>
